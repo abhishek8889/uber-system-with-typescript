@@ -1,0 +1,55 @@
+{
+	"validation": {
+		"phone_required": "Phone number is required.",
+		"phone_invalid": "Phone number is invalid.",
+		"phone_valid_length": "Phone number must be between 10 to 15 digits" ,
+		"first_name_required" : "First name is required",
+		"first_name_length" : "First name string length between 2 to 30",
+		"last_name_required" : "Last name is required",
+		"last_name_length" : "Last name string length between 2 to 30",
+		"user_id_required" : "User id is required",
+		"otp_required" : "OTP is required",
+		"otp_length" : "OTP must be 6 digits" ,
+		"otp_verification_type_invalid" : "Invalid OTP verification type.",
+		"otp_verification_type_required" : "OTP verification type is required." ,
+		"image_required" : "Image field is required." ,
+		"quotation_should_be_number" : "Quotation should be in number.",
+		"available_at_should_be_date" : "Available at should be valid date." ,
+		"duration_should_be_number" : "Duration should be in number." ,
+		"proposal_too_long" : "Proposal too long maximum 1000 character allowed." ,
+		"duration_character_lessthan_500" : "Duration character cannot exceed 500 character."
+	},
+	"error": {
+		"something_went_wrong": "Something went wrong, please try again later.",
+		"invalid_credentials": "Invalid credentials provided." ,
+		"user_already_exists" : "User already exist.",
+		"error_in_sending_verification_otp" : "There is error in sending OTP. Please retry again." ,
+		"invalid_timezone" : "Invalid timezone provided.",
+		"invalid_or_expired_verification_token" : "Provided OTP is invalid or expired." ,
+		"user_not_found" : "User not found with provided phone number." ,
+		"error_in_uploading_image" : "There is error in uploading image. Please try again later.",
+		"you_have_already_a_pending_request" : "You already have a pending service request. Please wait for it to be accepted or rejected before making a new request.",
+		"there_is_no_pending_req_to_cancel" : "There is no pending request to cancel." ,
+		"insufficient_role" : "Forbidden: Insufficient role" ,
+		"complete_profile_before_finding_jobs" : "Complete your profile before finding jobs" ,
+		"your_proposal_already_pending" : "Your proposal already in pending. You cannot send another proposal."
+	},
+	"success" : {
+		"record_created" : "Record created successfully.",
+		"otp_verified" : "OTP verified successfully." ,
+		"login_otp_sent": "You will get an OTP to the provided phone number." ,
+		"profile_updated" : "Profile updated successfully." ,
+		"image_uploaded_successfully" : "Image uploaded successfully." ,
+		"req_canceled_successfully" : "Request canceled successfully." ,
+		"record_found" : "Record found." ,
+		"request_updated" : "Request Updated." ,
+		"service_request_list" : "Service request list." ,
+		"proposal_sent_successfully" : "Proposal sent successfully."
+	},
+	"message": {
+		"verify_otp": "Hello {{first_name}}, welcome to Uber System App! Your OTP for account verification is {{otp}}. This code is valid for a limited time. Please do not share it with anyone." ,
+		"login_verify_otp": "Hello {{first_name}}, welcome to Uber System App! Your OTP for login is {{otp}}. This code is valid for a limited time. Please do not share it with anyone." ,
+		"otp_verified_successfully": "You're OTP has been successfully verified."
+	},
+	"phone_valid_length": "phone_valid_length"
+}

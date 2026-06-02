@@ -1,0 +1,15 @@
+{
+    "error": {
+        "something_went_wrong": "कुछ गलत हो गया",
+        "user_not_found": "उपयोगकर्ता नहीं मिला",
+        "user_already_exists": "उपयोगकर्ता पहले से मौजूद है",
+        "invalid_timezone": "अमान्य टाइमज़ोन",
+        "insufficient_role": "आपके पास यह कार्य करने की अनुमति नहीं है",
+        "phone_number_required": "फ़ोन नंबर आवश्यक है",
+        "error_in_creating_user": "उपयोगकर्ता बनाने में त्रुटि",
+        "error_in_sending_verification_otp": "OTP भेजने में त्रुटि"
+    },
+    "message": {
+        "verify_otp": "नमस्ते {{first_name}}, आपका OTP {{otp}} है"
+    }
+}
