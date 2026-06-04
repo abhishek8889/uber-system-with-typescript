@@ -7,7 +7,6 @@
     // Environment Settings
     "module": "CommonJS",
     "target": "ESNext",
-    "types": [],
 
     // Other Outputs
     "sourceMap": true,
@@ -26,5 +25,6 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  "include": ["**/*.ts"]
 }

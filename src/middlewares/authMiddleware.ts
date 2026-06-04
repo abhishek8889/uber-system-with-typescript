@@ -28,7 +28,7 @@ const authMiddleware = (...allowedRoles: string[]) => {
                 return res.status(403).json(errorResponse(req.t('error.insufficient_role')));
             }
 
-            (req as any).user = user;
+            req.user   = user;
             next();
 
         } catch (err) {

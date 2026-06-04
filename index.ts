@@ -1,3 +1,4 @@
+/// <reference path="./src/types/express.d.ts" />
 import express from 'express';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';

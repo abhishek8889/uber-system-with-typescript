@@ -1,6 +1,8 @@
-const {MAX_DISTANCE_RADIUS} = require("../constants/constants");
-const ProviderProfile = require("../modals/ProviderProfile");
+import constants from "../constants/constants";
+import ProviderProfile from "../modals/ProviderProfile";
 import mongoose from "mongoose";
+
+const { MAX_DISTANCE_RADIUS } = constants;
 
 export const upsertProviderProfile = async (filter : object, data : object, session : mongoose.ClientSession | null = null) => {
     const record = await ProviderProfile.findOneAndUpdate(
@@ -8,7 +10,7 @@ export const upsertProviderProfile = async (filter : object, data : object, sess
         data,
         {   
             upsert: true,
-            new: true ,
+            returnDocument: "after",
             session
         }
     );

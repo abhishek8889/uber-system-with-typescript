@@ -24,7 +24,8 @@ export const findByIdAndUpdate = async (id : string, data : any, session : mongo
         id,
         data,
         { 
-            new: true ,
+            // new: true ,
+            returnDocument: "after",
             session
         }
     );

@@ -4,6 +4,6 @@ import authRoutes from './auth/authRoutes';
 import mainRoutes from './main/mainRoute';
 
 app.use('/auth', authRoutes);
-app.use('/main', mainRoutes);
+app.use('/', mainRoutes);
 
 export default app;
