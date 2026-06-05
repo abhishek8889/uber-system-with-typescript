@@ -65,7 +65,6 @@ export const verifyOtp = async (req: Request, res: Response) => {
 
 export const providerProfileUpdate = async (req: Request, res: Response) => {
     try {
-
         const resp = await authService.providerProfileUpdate({
             ...req.body,
             user_id: req.user!._id

@@ -44,7 +44,8 @@
 		"record_found" : "Record found." ,
 		"request_updated" : "Request Updated." ,
 		"service_request_list" : "Service request list." ,
-		"proposal_sent_successfully" : "Proposal sent successfully."
+		"proposal_sent_successfully" : "Proposal sent successfully." ,
+		"service_request_posted" : "Service request posted successfully."
 	},
 	"message": {
 		"verify_otp": "Hello {{first_name}}, welcome to Uber System App! Your OTP for account verification is {{otp}}. This code is valid for a limited time. Please do not share it with anyone." ,
