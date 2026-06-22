@@ -32,3 +32,9 @@ export enum PROPOSAL_ENUM {
     REJECTED = 'rejected',
     VIEWED = 'viewed'
 }
+
+
+export enum SERVICE_TYPE {
+    ONLINE = "online",
+    OFFLINE = "offline"
+}

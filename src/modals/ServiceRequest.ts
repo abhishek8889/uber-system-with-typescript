@@ -2,7 +2,7 @@
 // const { SERVICE_REQUEST_STATUS } = require('../constants/enums');
 
 import mongoose from 'mongoose';
-import { SERVICE_REQUEST_STATUS } from '../constants/enums';
+import { SERVICE_REQUEST_STATUS, SERVICE_TYPE } from '../constants/enums';
 
 const ServiceRequestSchema = new mongoose.Schema (
     {
@@ -45,6 +45,11 @@ const ServiceRequestSchema = new mongoose.Schema (
         service: {
             type: String,
             default: ""
+        } ,
+        service_type: {
+            type: String,
+            enum: Object.values(SERVICE_TYPE),
+            default: SERVICE_TYPE.ONLINE
         } ,
         customer_quotation : { // Price set by Customer
             type: Number,

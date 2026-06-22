@@ -108,16 +108,147 @@ export const uploadImage= async (image:any ,uploadArea: string = 'cloudinary')  
 
 
 //  ############## Post Service Request ##############
-interface SearchProviderReq{
-
+interface PostServiceRequest{
+    location_name : string ;
+    latitude : number ;
+    longitude : number ;
+    requirement : string ;
+    category : string[];
+    customer_quotation : string;
+    service_type?: string;
+    customer_id : string
 }
-export const postServiceRequest = async(reqData : SearchProviderReq) => {
+
+export const postServiceRequest = async(reqData : PostServiceRequest) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try{
-        return "Post Service Request";
+        const  {
+            location_name,
+            latitude,
+            longitude,
+            requirement,
+            category,
+            customer_quotation,
+            service_type ,
+            customer_id
+        } = reqData;
+
+
+        // ############## CREATE SERVICE REQUEST #################
+        
+        const serviceReq = await serviceRequestRepository.createServiceRequest({
+            customer_id : customer_id,
+            location_name : location_name,
+            customer_location : {
+                type : "Point" ,
+                coordinates : [longitude , latitude]
+            },
+            requirement : requirement,
+            category : category,
+            customer_quotation : customer_quotation,
+            service_type : service_type
+        },session);
+
+        // ############## NOTIFY ALL SERVICE PROVIDER  ###########
+        // PUSH NOTIFICATION WILL IMPLEMENT HERE
+
+        await session.commitTransaction();
+        return serviceReq;
+    }catch(err:any){
+        await session.abortTransaction();
+        throw err;
+    }finally{
+        session.endSession();
+    }
+}
+
+//  ############## CHECK AVAILABLE REQUEST ##############
+
+interface GetAvailableReq {
+    provider_id : string
+}
+
+export const getAvailableRequest = async (reqData : GetAvailableReq) => {
+    try{
+        const { provider_id } = reqData;
+        const provider : any = await userRepository.userDetailsById(provider_id , USER_ROLE_TYPES.PROVIDER);
+        
+        const serviceRequestList = await serviceRequestRepository.searchServiceRequest({
+            longitude: provider[0].provider_profile?.location?.coordinates[0],
+            latitude: provider[0].provider_profile?.location?.coordinates[1],
+            service_categories : provider[0].provider_profile?.service_categories ,
+            service_radius : provider[0].provider_profile?.service_radius
+        });
+
+        return serviceRequestList;
     }catch(err){
         throw err;
     }
+} 
+
+
+
+//  ################### PROPOSAL SEND  ##############
+interface SendProposalRequest {
+    
 }
+
+export const sendProposal = async(reqData : SendProposalRequest) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try{
+        const {
+            request_id ,
+            proposal ,
+            media ,
+            provider_quotation ,
+            available_at ,
+            expected_duration 
+        } = reqData;
+
+        //  ########## Allow Proposal only when Request is pending ##########
+
+        const requestDetail = await serviceRequestRepository.findOne({_id : request_id});
+
+        // console.log(requestDetail)
+
+        if(requestDetail.status !== SERVICE_REQUEST_STATUS.PENDING) {
+            return returnError(translator.translate('error.you_cannot_send_proposal_because_status_is_already', { status: requestDetail.status ?? "rejected" }) ,400);
+        }
+
+        return requestDetail;
+
+        const existingProposal = await proposalRipository.findOne({
+            request_id : request_id ,
+            provider_id : user_id 
+        });
+
+        if(existingProposal) {
+            returnError("error.your_proposal_already_pending")
+        }
+
+        const proposalResp  = await proposalRipository.create({
+            request_id : request_id ,
+            proposal : proposal ,
+            media : media ,
+            provider_quotation : provider_quotation ,
+            available_at : available_at ,
+            expected_duration : expected_duration
+        } , session);
+
+        await session.commitTransaction();
+        return proposalResp;
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        session.endSession();   
+    }
+}
+
+
 
 
 // #############  BACKGROUND PROCESS  ###############        
@@ -246,54 +377,4 @@ export const postServiceRequest = async(reqData : SearchProviderReq) => {
 //         throw error;
 //     }
 // }
-
-// //  ################### PROPOSAL SEND  ##############
-
-// exports.sendProposal = async(reqData) => {
-//     const session = await mongoose.startSession();
-//     session.startTransaction();
-
-//     try{
-//         const {request_id , proposal , media , provider_quotation , available_at , expected_duration } = reqData;
-  
-//         //  ########## Allow Proposal only when Request is pending ##########
-
-//         const requestDetail = await serviceRequestRepository.findOne({_id : request_id});
-
-//         // console.log(requestDetail)
-
-//         if(requestDetail.status !== SERVICE_REQUEST_STATUS.PENDING) {
-//             return returnError(translator.translate('error.you_cannot_send_proposal_because_status_is_already', { status: requestDetail.status ?? "rejected" }) ,400);
-//         }
-
-//         return requestDetail;
-
-//         const existingProposal = await proposalRipository.findOne({
-//             request_id : request_id ,
-//             provider_id : user_id 
-//         });
-
-//         if(existingProposal) {
-//             returnError("error.your_proposal_already_pending")
-//         }
-
-//         const proposalResp  = await proposalRipository.create({
-//             request_id : request_id ,
-//             proposal : proposal ,
-//             media : media ,
-//             provider_quotation : provider_quotation ,
-//             available_at : available_at ,
-//             expected_duration : expected_duration
-//         } , session);
-
-//         await session.commitTransaction();
-//         return proposalResp;
-//     } catch (error) {
-//         await session.abortTransaction();
-//         throw error;
-//     } finally {
-//         session.endSession();   
-//     }
-// }
-
 
