@@ -69,12 +69,12 @@ export const uploadImage = async(req: Request, res: Response) => {
 
 export const sendProposal = async (req : Request, res : Response) => {
     try{
-        const resp = await mainService.sendProposal({
-            ...req.body,
-            user_id : req.user._id
-        });
+        // const resp = await mainService.sendProposal({
+        //     ...req.body,
+        //     user_id : req.user._id
+        // });
 
-        return sendSuccessResponse(res, req.t('success.image_uploaded_successfully'), resp , 200);
+        // return sendSuccessResponse(res, req.t('success.image_uploaded_successfully'), resp , 200);
     } catch (err) {
         return handleError(err, req, res);
     } 

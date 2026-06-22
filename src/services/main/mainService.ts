@@ -190,63 +190,63 @@ export const getAvailableRequest = async (reqData : GetAvailableReq) => {
 
 
 //  ################### PROPOSAL SEND  ##############
-interface SendProposalRequest {
+// interface SendProposalRequest {
     
-}
+// }
 
-export const sendProposal = async(reqData : SendProposalRequest) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+// export const sendProposal = async(reqData : SendProposalRequest) => {
+//     const session = await mongoose.startSession();
+//     session.startTransaction();
 
-    try{
-        const {
-            request_id ,
-            proposal ,
-            media ,
-            provider_quotation ,
-            available_at ,
-            expected_duration 
-        } = reqData;
+//     try{
+//         const {
+//             request_id ,
+//             proposal ,
+//             media ,
+//             provider_quotation ,
+//             available_at ,
+//             expected_duration 
+//         } = reqData;
 
-        //  ########## Allow Proposal only when Request is pending ##########
+//         //  ########## Allow Proposal only when Request is pending ##########
 
-        const requestDetail = await serviceRequestRepository.findOne({_id : request_id});
+//         const requestDetail = await serviceRequestRepository.findOne({_id : request_id});
 
-        // console.log(requestDetail)
+//         // console.log(requestDetail)
 
-        if(requestDetail.status !== SERVICE_REQUEST_STATUS.PENDING) {
-            return returnError(translator.translate('error.you_cannot_send_proposal_because_status_is_already', { status: requestDetail.status ?? "rejected" }) ,400);
-        }
+//         if(requestDetail.status !== SERVICE_REQUEST_STATUS.PENDING) {
+//             return returnError(translator.translate('error.you_cannot_send_proposal_because_status_is_already', { status: requestDetail.status ?? "rejected" }) ,400);
+//         }
 
-        return requestDetail;
+//         return requestDetail;
 
-        const existingProposal = await proposalRipository.findOne({
-            request_id : request_id ,
-            provider_id : user_id 
-        });
+//         const existingProposal = await proposalRipository.findOne({
+//             request_id : request_id ,
+//             provider_id : user_id 
+//         });
 
-        if(existingProposal) {
-            returnError("error.your_proposal_already_pending")
-        }
+//         if(existingProposal) {
+//             returnError("error.your_proposal_already_pending")
+//         }
 
-        const proposalResp  = await proposalRipository.create({
-            request_id : request_id ,
-            proposal : proposal ,
-            media : media ,
-            provider_quotation : provider_quotation ,
-            available_at : available_at ,
-            expected_duration : expected_duration
-        } , session);
+//         const proposalResp  = await proposalRipository.create({
+//             request_id : request_id ,
+//             proposal : proposal ,
+//             media : media ,
+//             provider_quotation : provider_quotation ,
+//             available_at : available_at ,
+//             expected_duration : expected_duration
+//         } , session);
 
-        await session.commitTransaction();
-        return proposalResp;
-    } catch (error) {
-        await session.abortTransaction();
-        throw error;
-    } finally {
-        session.endSession();   
-    }
-}
+//         await session.commitTransaction();
+//         return proposalResp;
+//     } catch (error) {
+//         await session.abortTransaction();
+//         throw error;
+//     } finally {
+//         session.endSession();   
+//     }
+// }
 
 
 
