@@ -1,6 +1,3 @@
-// const User = require('../modals/User');
-// const ProviderProfile = require('../modals/ProviderProfile')
-
 import mongoose from 'mongoose';
 import User from '../modals/User';
 

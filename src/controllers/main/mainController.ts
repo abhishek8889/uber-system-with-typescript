@@ -69,33 +69,44 @@ export const uploadImage = async(req: Request, res: Response) => {
 
 export const sendProposal = async (req : Request, res : Response) => {
     try{
-        // const resp = await mainService.sendProposal({
-        //     ...req.body,
-        //     user_id : req.user._id
-        // });
+        console.log( new Date().toISOString());
 
-        // return sendSuccessResponse(res, req.t('success.image_uploaded_successfully'), resp , 200);
+        const resp = await mainService.sendProposal({
+            ...req.body,
+            user_id : req.user._id
+        });
+
+        return sendSuccessResponse(res, req.t('success.proposal_sent_successfully'), resp , 200);
     } catch (err) {
         return handleError(err, req, res);
     } 
 }
 
-// exports.cancelServiceRequest = async ( req , res) => {
-//     try{
-//         const resp = await mainService.cancelServiceRequest({...req.body ,user_id : req.user._id});
+// ############### Cancel Service Request ###############
 
-//         return res.status(200).json(successResponse(req.t('success.req_canceled_successfully'), resp));
-//     } catch (error) {
-//         const status = error.statusCode || 500;
-//         const message = error.statusCode
-//             ? req.t(error.message)
-//             : req.t('error.something_went_wrong');
+export const cancelServiceRequest = async ( req: Request , res: Response) => {
+    try{
+        const resp = await mainService.cancelServiceRequest({...req.body ,user_id : req.user._id});
 
-//         return res.status(status).json(errorResponse(message, req.t(error.message)));
-//     } 
-// }
+        return sendSuccessResponse(res, req.t('success.service_request_canceled_successfully'), resp , 200);
+    } catch (err) {
+        return handleError(err, req, res);
+    } 
+}
 
-// // ############ Notification List ###################
+// ############## Update Proposal ################
+
+export const updateProposal = async (req:Request , res : Response) => {
+    try{
+        const resp = await mainService.updateProposal({...req.body ,user_id : req.user._id});
+
+        return sendSuccessResponse(res, req.t('success.proposal_updated_successfully'), resp , 200);
+    }catch(err){
+        return handleError(err, req, res);
+    }
+}
+
+// ############ Notification List ###################
 
 
 // exports.serviceNotificationList = async (req ,res) => {

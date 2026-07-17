@@ -32,7 +32,11 @@
 		"there_is_no_pending_req_to_cancel" : "There is no pending request to cancel." ,
 		"insufficient_role" : "Forbidden: Insufficient role" ,
 		"complete_profile_before_finding_jobs" : "Complete your profile before finding jobs" ,
-		"your_proposal_already_pending" : "Your proposal already in pending. You cannot send another proposal."
+		"your_proposal_already_pending" : "Your proposal already in pending. You cannot send another proposal.",
+		"service_request_canceled_successfully" : "Service request canceled successfully.",
+		"this_request_is_not_active_anymore" : "This request is not active anymore",
+		"you_cannot_send_proposal_because_status_is_already" : "This request has already been {{status}}, so a proposal cannot be sent.",
+		"your_proposal_already_status" :  "You cannot send a proposal because your proposal has already been {{status}}."
 	},
 	"success" : {
 		"record_created" : "Record created successfully.",

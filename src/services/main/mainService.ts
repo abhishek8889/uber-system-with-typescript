@@ -13,7 +13,7 @@ import * as serviceRequestRepository from "../../dbRepositories/serviceRequestRe
 
 import * as serviceNotificationRepository from "../../dbRepositories/serviceNotificationRepository";
 import * as userRepository from "../../dbRepositories/userRepository";
-// import * as proposalRepository from "../../dbRepositories/proposalRepository";
+import * as proposalRepository from "../../dbRepositories/proposalRepository";
 
 import * as cloudinaryService from "../cloudinary/cloudinaryService";
 
@@ -25,6 +25,8 @@ import {
 
 import { returnError } from "../../utils/responseHandler";
 import {translate} from "../../utils/translator";
+import { ServiceRequestResource } from "../../resources/ServiceRequestResource";
+import { error } from "console";
 
 
 interface SearchProviderReq {
@@ -174,82 +176,158 @@ export const getAvailableRequest = async (reqData : GetAvailableReq) => {
         const { provider_id } = reqData;
         const provider : any = await userRepository.userDetailsById(provider_id , USER_ROLE_TYPES.PROVIDER);
         
-        const serviceRequestList = await serviceRequestRepository.searchServiceRequest({
+        const [serviceRequestList] = await serviceRequestRepository.searchServiceRequest({
             longitude: provider[0].provider_profile?.location?.coordinates[0],
             latitude: provider[0].provider_profile?.location?.coordinates[1],
             service_categories : provider[0].provider_profile?.service_categories ,
             service_radius : provider[0].provider_profile?.service_radius
         });
 
-        return serviceRequestList;
+        return ServiceRequestResource.requestDetails(serviceRequestList);
     }catch(err){
         throw err;
     }
 } 
 
 
-
 //  ################### PROPOSAL SEND  ##############
-// interface SendProposalRequest {
+interface SendProposalRequest {
+    request_id : string ;
+    proposal : string ;
+    provider_quotation : string ;
+    available_at : string ;
+    expected_duration : string ;
+    user_id : string;
+}
+
+export const sendProposal = async(reqData : SendProposalRequest) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try{
+        const {
+            request_id ,
+            proposal ,
+            provider_quotation ,
+            available_at ,
+            expected_duration ,
+            user_id
+        } = reqData;
+
+        // ########## Allow Proposal only when Request is pending ##########
+
+        const requestDetail:any = await serviceRequestRepository.findOne({_id : request_id});
+
+        if(requestDetail.status !== SERVICE_REQUEST_STATUS.PENDING) {
+            returnError(translate('error.you_cannot_send_proposal_because_status_is_already', { status: requestDetail.status ?? "rejected" }) ,400);
+        }
+
+        const existingProposal = await proposalRepository.findOne({
+            request_id : request_id,
+            provider_id : user_id 
+        });
+
+
+        if(existingProposal?.status != PROPOSAL_ENUM.REJECTED ) {
+            const proposal_status =  existingProposal?.status == PROPOSAL_ENUM.VIEWED ? PROPOSAL_ENUM.PENDING : existingProposal?.status ;
+            returnError(translate("error.your_proposal_already_status",{status:proposal_status ?? PROPOSAL_ENUM.PENDING }) , 400);
+        }
+
+        const proposalResp  = await proposalRepository.create({
+            request_id : request_id ,
+            provider_id : user_id ,
+            proposal : proposal ,
+            // media : media ,
+            provider_quotation : provider_quotation ,
+            available_at : available_at ,
+            expected_duration : expected_duration
+        } , session);
+
+        await session.commitTransaction();
+        return proposalResp;
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        session.endSession();   
+    }
+}
+
+
+//  ############### CANCEL SERVICE REQUEST ###############
+
+interface CancelServiceRequest {
+    request_id : string;
+    user_id : string;
+}
+
+export const cancelServiceRequest = async (reqData : CancelServiceRequest) => {
     
-// }
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-// export const sendProposal = async(reqData : SendProposalRequest) => {
-//     const session = await mongoose.startSession();
-//     session.startTransaction();
+    try{
+        const {user_id , request_id} = reqData;
 
-//     try{
-//         const {
-//             request_id ,
-//             proposal ,
-//             media ,
-//             provider_quotation ,
-//             available_at ,
-//             expected_duration 
-//         } = reqData;
+        const pendingReqExist = await serviceRequestRepository.findOne({
+            $or : [
+                {customer_id : user_id},
+                {provider_id : user_id}
+            ],
+            _id : request_id,
+            status : SERVICE_REQUEST_STATUS.PENDING
+        });
 
-//         //  ########## Allow Proposal only when Request is pending ##########
+        if(!pendingReqExist){
+            returnError(translate('error.this_request_is_not_active_anymore') ,400);
+        }
 
-//         const requestDetail = await serviceRequestRepository.findOne({_id : request_id});
+        const serviceRequest = await serviceRequestRepository.updateOne(
+            {
+                $or : [
+                    {customer_id : user_id},
+                    {provider_id : user_id}
+                ] ,
+                status : SERVICE_REQUEST_STATUS.PENDING
+            } , 
+            {
+                status : SERVICE_REQUEST_STATUS.REJECTED
+            } ,
+            session
+        );
 
-//         // console.log(requestDetail)
+        await session.commitTransaction();
 
-//         if(requestDetail.status !== SERVICE_REQUEST_STATUS.PENDING) {
-//             return returnError(translator.translate('error.you_cannot_send_proposal_because_status_is_already', { status: requestDetail.status ?? "rejected" }) ,400);
-//         }
+        return serviceRequest;
+    }catch (error) {
+        await session.abortTransaction();
+        throw error;
+    }finally {
+        session.endSession();
+    }
+}
 
-//         return requestDetail;
+//  ############ UPDATE PROPOSAL #################
 
-//         const existingProposal = await proposalRipository.findOne({
-//             request_id : request_id ,
-//             provider_id : user_id 
-//         });
+interface UpdateProposalRequest {
 
-//         if(existingProposal) {
-//             returnError("error.your_proposal_already_pending")
-//         }
+}
 
-//         const proposalResp  = await proposalRipository.create({
-//             request_id : request_id ,
-//             proposal : proposal ,
-//             media : media ,
-//             provider_quotation : provider_quotation ,
-//             available_at : available_at ,
-//             expected_duration : expected_duration
-//         } , session);
-
-//         await session.commitTransaction();
-//         return proposalResp;
-//     } catch (error) {
-//         await session.abortTransaction();
-//         throw error;
-//     } finally {
-//         session.endSession();   
-//     }
-// }
-
+export const updateProposal = async(reqData : UpdateProposalRequest) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try{
 
 
+        await session.commitTransaction();
+        
+    }catch (error) {
+        await session.abortTransaction();
+        throw error;
+    }finally {
+        session.endSession();
+    }
+}
 
 // #############  BACKGROUND PROCESS  ###############        
 // process.nextTick(async () => {
@@ -286,48 +364,6 @@ export const getAvailableRequest = async (reqData : GetAvailableReq) => {
 //     }
 // });
 
-// exports.cancelServiceRequest = async (reqData) => {
-    
-//     const session = await mongoose.startSession();
-//     session.startTransaction();
-
-//     try{
-//         const {user_id} = reqData;
-
-//         const pendingReqExist = await serviceRequestRepository.findOne({
-//             $or : [
-//                 {customer_id : user_id},
-//                 {provider_id : user_id}
-//             ] ,
-//             status : SERVICE_REQUEST_STATUS.PENDING
-//         });
-
-//         if(!pendingReqExist){
-//             returnError("error.there_is_no_pending_req_to_cancel" ,400);
-//         }
-
-//         const serviceRequest = await serviceRequestRepository.updateOne(
-//             {
-//                 $or : [
-//                     {customer_id : user_id},
-//                     {provider_id : user_id}
-//                 ] ,
-//                 status : SERVICE_REQUEST_STATUS.PENDING
-//             } , 
-//             {
-//                 status : SERVICE_REQUEST_STATUS.REJECTED
-//             } , session);
-
-//         await session.commitTransaction();
-
-//         return serviceRequest;
-//     }catch (error) {
-//         await session.abortTransaction();
-//         throw error;
-//     }finally {
-//         session.endSession();
-//     }
-// }
 
 // // exports.acceptServiceRequest = async (providerId , customerId , customerLocation , requirement , service) => {
 

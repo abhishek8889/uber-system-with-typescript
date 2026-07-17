@@ -9,14 +9,15 @@ import { validateUploadImage, validateProposalReq } from '../../requestValidatat
 
 import {USER_ROLE_TYPES} from "../../constants/enums";
 
-// //  ##############  MAIN SERVICE ROUTES #############
+//  ##############  MAIN SERVICE ROUTES #############
+
 router.get('/search-provider', authMiddleware(USER_ROLE_TYPES.CUSTOMER), validate, mainController.searchProvider);
 router.post('/upload-image', authMiddleware(), validateUploadImage() ,validate , mainController.uploadImage);
 router.post('/post-service-request', authMiddleware(USER_ROLE_TYPES.CUSTOMER), validate, mainController.postServiceRequest);
 router.get('/get-available-request', authMiddleware(USER_ROLE_TYPES.PROVIDER), validate, mainController.getAvailableRequest);
 router.post('/send-proposal', authMiddleware(USER_ROLE_TYPES.PROVIDER) ,validateProposalReq(), validate , mainController.sendProposal);
+router.post('/cancel-service-request', authMiddleware(USER_ROLE_TYPES.CUSTOMER ), validate, mainController.cancelServiceRequest);
 
-// router.post('/cancel-service-request', authMiddleware(USER_ROLE_TYPES.CUSTOMER , USER_ROLE_TYPES.PROVIDER ), validate, mainController.cancelServiceRequest);
 // router.post('/provider-request-response', authMiddleware(USER_ROLE_TYPES.PROVIDER) ,validate , mainController.providerRequestResponse);
 // router.get('/service-request-list', authMiddleware(USER_ROLE_TYPES.PROVIDER) ,validate , mainController.serviceRequestList);
 

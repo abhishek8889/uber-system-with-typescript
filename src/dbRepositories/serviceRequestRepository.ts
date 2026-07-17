@@ -37,17 +37,21 @@ export const findOne = async (condition: any) => {
 //     return record;
 // };
 
-// export const updateOne = async (filter: any, data: any, session: mongoose.ClientSession | null = null) => {
-//     const record = await ServiceRequest.updateOne(
-//         filter,
-//         data,
-//         {
-//             session
-//         }
-//     );
+export const updateOne = async (
+    filter: any,
+    data: any,
+    session : mongoose.ClientSession 
+) => {
+    const record = await ServiceRequest.updateOne(
+        filter,
+        data,
+        {
+            session
+        }
+    );
 
-//     return record;
-// };
+    return record;
+};
 
 interface SearchFilter {
     longitude: number;
@@ -88,6 +92,20 @@ export const searchServiceRequest = async (filter: SearchFilter) => {
                     maxDistance: service_radius ?? MAX_DISTANCE_RADIUS,
                     spherical: true,
                     query: geoNearQuery
+                }
+            },
+            {
+                $lookup : {
+                    from : "users",
+                    localField : "customer_id",
+                    foreignField : "_id",
+                    as : "customer"
+                }
+            },
+            {
+                $unwind : {
+                    path : "$customer",
+                    preserveNullAndEmptyArrays: true
                 }
             }
         ]);
